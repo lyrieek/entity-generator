@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.versionsystem.eg'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.yaml:snakeyaml:2.3'
+    implementation 'com.oracle.database.jdbc:ojdbc8:23.3.0.23.09'
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
