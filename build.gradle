@@ -1,9 +1,34 @@
 plugins {
     id 'java'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '1.3.0'
 }
 
-group = 'com.versionsystem.eg'
+group = 'com.lyrieek.eg'
 version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    compileJava {
+        options.compilerArgs << "-parameters"
+    }
+}
+
+gradlePlugin {
+    website = 'https://github.com/lyrieek/entity-generator'
+    vcsUrl = 'https://github.com/lyrieek/entity-generator.git'
+    plugins {
+        entityGenerator {
+            id = 'com.lyrieek.eg'
+            displayName = 'Entity Generator'
+            implementationClass = 'com.lyrieek.eg.gradle.GradlePlugin'
+        }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -11,7 +36,10 @@ repositories {
 
 dependencies {
     implementation 'org.yaml:snakeyaml:2.3'
-    implementation 'com.oracle.database.jdbc:ojdbc8:23.3.0.23.09'
+    implementation 'net.bytebuddy:byte-buddy:1.15.11'
+    implementation 'com.baomidou:mybatis-plus:3.5.9'
+//    compileOnly 'com.baomidou:mybatis-plus:3.5.9'
+    runtimeOnly 'com.oracle.database.jdbc:ojdbc8:23.3.0.23.09'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

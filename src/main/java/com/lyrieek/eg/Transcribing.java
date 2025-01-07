@@ -1,6 +1,7 @@
 package com.lyrieek.eg;
 
 import com.lyrieek.eg.config.EGEnv;
+import com.lyrieek.eg.config.RedInk;
 import com.lyrieek.eg.conn.DBConn;
 import com.lyrieek.eg.conn.OracleBasicInfo;
 
@@ -10,17 +11,17 @@ import java.util.Map;
 import java.util.zip.CRC32;
 
 /**
- * 将数据库元信息誊抄到yml中
+ * 将数据库元信息誊抄到cache yml中
  */
 public class Transcribing {
 
 	private final CRC32 crc32 = new CRC32();
 
-	public Map<String, ResArray> getTables(EGEnv env) {
+	public Map<String, ResArray> getTables(EGEnv env, RedInk redInk) {
 		try (DBConn conn = new DBConn(env)) {
 			conn.start();
 			OracleBasicInfo info = new OracleBasicInfo(conn);
-			return info.list();
+			return info.list(redInk);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -37,8 +38,17 @@ public class Transcribing {
 				if (item.get("primaryKey") != null) {
 					builder.append("    primaryKey: true\n");
 				}
-				if (!item.get("DATA_TYPE").toString().startsWith("VARCHAR")) {
-					builder.append("    type: %s\n".formatted(item.get("DATA_TYPE")));
+				String type = item.get("DATA_TYPE").toString();
+				if (!type.startsWith("VARCHAR")) {
+					builder.append("    type: %s\n".formatted(type));
+					Object length = item.get("DATA_LENGTH");
+					if (length != null && !"CLOB,BLOB,DATE".contains(type)) {
+						builder.append("    length: %s\n".formatted(length));
+					}
+					Object precision = item.get("DATA_PRECISION");
+					if (precision != null) {
+						builder.append("    precision: %s\n".formatted(precision));
+					}
 				}
 				crc32.update(item.toString().getBytes(StandardCharsets.UTF_8));
 			}

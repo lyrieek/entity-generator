@@ -1,5 +1,6 @@
 package com.lyrieek.eg.config;
 
+import com.lyrieek.eg.ClassInfo;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -31,7 +32,14 @@ public class RedInk {
 		return data.get(key);
 	}
 
+	public boolean isEmpty(String key) {
+		return !data.containsKey(key);
+	}
+
 	public boolean matchPre(String content) {
+		if (isEmpty("_pre")) {
+			return false;
+		}
 		for (String item : data.get("_pre")) {
 			if (content.startsWith(item)) {
 				return true;
@@ -44,4 +52,27 @@ public class RedInk {
 		System.out.println(new RedInk("red-ink.yml").get("_pre"));
 	}
 
+	public Class<?> getSubClass(ClassInfo classInfo) {
+		try {
+			if (classInfo.getSubClass() != null) {
+				return Class.forName(classInfo.getSubClass());
+			}
+			if (classInfo.getTableName().endsWith("_LOG") && data.containsKey("_default_log_sub")) {
+				return Class.forName(get("_default_log_sub").get(0));
+			}
+			if (data.containsKey("_default_sub")) {
+				return Class.forName(get("_default_sub").get(0));
+			}
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		return Object.class;
+	}
+
+	public String getPackageName() {
+		if (isEmpty("_package_name")) {
+			return "com";
+		}
+		return get("_package_name").get(0);
+	}
 }

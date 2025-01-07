@@ -18,10 +18,9 @@ public abstract class BasicInfo {
 		this.schema = conn.getSchema();
 	}
 
-	public Map<String, ResArray> list() {
+	public Map<String, ResArray> list(RedInk redInk) {
 		Map<String, ResArray> map = new LinkedHashMap<>();
 		Map<String, List<String>> cons = conn.queryKeyArray(getCons(), "TABLE_NAME", "NAME");
-		RedInk redInk = new RedInk("red-ink.yml");
 		conn.query(getTableQuery(), ResArray.strMap("TABLE_NAME")).forEach(e -> {
 			String tableName = e.get("TABLE_NAME").toString();
 			if (redInk.matchPre(tableName)) {

@@ -10,7 +10,7 @@ import java.util.Properties;
 public class EGEnv {
 	private final Properties prop = new Properties();
 
-	public EGEnv load(String path){
+	public EGEnv(String path){
 		try {
 			URL resource = Main.class.getClassLoader().getResource(path);
 			assert resource != null;
@@ -18,7 +18,6 @@ public class EGEnv {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		return this;
 	}
 
 	public String val(String key) {

@@ -5,6 +5,8 @@ import com.lyrieek.eg.ResArray;
 
 import java.io.Closeable;
 import java.sql.*;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ public class DBConn implements Closeable {
 	private final EGEnv env;
 	private Connection conn;
 	private String schema;
+	private LocalTime time;
 
 	public DBConn(EGEnv env) {
 		this.env = env;
@@ -29,6 +32,7 @@ public class DBConn implements Closeable {
 				System.out.println("无法连接到数据库!");
 				return;
 			}
+			time = LocalTime.now();
 			System.out.println("成功连接到数据库!");
 			schema = user.toUpperCase();
 		} catch (SQLException e) {
@@ -115,6 +119,8 @@ public class DBConn implements Closeable {
 		if (conn != null) {
 			try {
 				conn.close();
+				System.out.printf("数据库连接关闭了, 本次操作了%d毫秒%n",
+						ChronoUnit.MILLIS.between(time, LocalTime.now()));
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}

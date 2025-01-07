@@ -14,7 +14,7 @@ public class OracleBasicInfo extends BasicInfo {
 
 	@Override
 	String getCols(String tableName) {
-		return "SELECT COLUMN_NAME,DATA_TYPE,DATA_LENGTH FROM all_tab_columns WHERE table_name = '" + tableName + "' AND owner = '" + schema + "' order by column_id";
+		return "SELECT COLUMN_NAME,DATA_TYPE,DATA_LENGTH,DATA_PRECISION FROM all_tab_columns WHERE table_name = '" + tableName + "' AND owner = '" + schema + "' order by column_id";
 	}
 
 	@Override
