@@ -22,7 +22,6 @@ public class TextProcessor {
 			String group = matcher.group(1);
 			String replacement;
 			if (group.length() > 1) {
-				// 连续的大写字母开头的，转为首字母大写，其余小写
 				replacement = group.charAt(0) + group.substring(1).toLowerCase();
 			} else {
 				replacement = group;

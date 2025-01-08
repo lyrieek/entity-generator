@@ -5,7 +5,8 @@ plugins {
 }
 
 group = 'com.lyrieek.eg'
-version = '1.0-SNAPSHOT'
+version = '1.0'
+description = 'Entity Generator'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -25,7 +26,17 @@ gradlePlugin {
         entityGenerator {
             id = 'com.lyrieek.eg'
             displayName = 'Entity Generator'
+            description = 'Entity Generator'
             implementationClass = 'com.lyrieek.eg.gradle.GradlePlugin'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = 'localPluginRepository'
+            url = uri("${gradle.gradleHomeDir}/caches/modules-2/files-2.1")
         }
     }
 }

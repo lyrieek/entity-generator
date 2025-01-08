@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.zip.CRC32;
 
 /**
- * 将数据库元信息誊抄到cache yml中
+ * copy db meta to cache yml
  */
 public class Transcribing {
 

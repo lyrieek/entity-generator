@@ -71,7 +71,7 @@ public class DBConn implements Closeable {
 					Class<?> columnType = columnTypes.get(columnName);
 
 					Object value = null;
-					if (columnType != null) { // 如果 Map 中指定了类型，则尝试按类型获取
+					if (columnType != null) {
 						try {
 							if (columnType == String.class) {
 								value = rs.getString(i);
@@ -90,11 +90,10 @@ public class DBConn implements Closeable {
 							} else if (columnType == java.sql.Timestamp.class) {
 								value = rs.getTimestamp(i);
 							} else {
-								value = rs.getObject(i); // 其他类型使用 getObject
+								value = rs.getObject(i);
 							}
 						} catch (SQLException e) {
-							// 处理类型转换异常，例如数据库中的 NULL 值
-							System.err.println("列 " + columnName + " 类型转换异常: " + e.getMessage());
+							System.err.println("column " + columnName + " error: " + e.getMessage());
 							value = null;
 						}
 					} else {
@@ -119,7 +118,7 @@ public class DBConn implements Closeable {
 		if (conn != null) {
 			try {
 				conn.close();
-				System.out.printf("数据库连接关闭了, 本次操作了%d毫秒%n",
+				System.out.printf("DB Close, use %dms%n",
 						ChronoUnit.MILLIS.between(time, LocalTime.now()));
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
