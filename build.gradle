@@ -27,6 +27,7 @@ gradlePlugin {
             id = 'com.lyrieek.eg'
             displayName = 'Entity Generator'
             description = 'Entity Generator'
+            tags.addAll("db", "generator")
             implementationClass = 'com.lyrieek.eg.gradle.GradlePlugin'
         }
     }
