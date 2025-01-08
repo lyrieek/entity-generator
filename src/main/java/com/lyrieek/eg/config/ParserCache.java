@@ -18,11 +18,15 @@ import java.util.Objects;
 
 public class ParserCache {
 
-	public static List<ClassInfo> parseYaml(String filePath) throws Exception {
-		return parseYaml(Paths.get(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(filePath)).toURI()));
+	public static List<ClassInfo> parseYaml(String filePath) {
+		try {
+			return parseYaml(Paths.get(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(filePath)).toURI()));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public static List<ClassInfo> parseYaml(Path path) throws Exception {
+	public static List<ClassInfo> parseYaml(Path path) {
 		List<ClassInfo> classInfoList = new ArrayList<>();
 		try (InputStream input = new FileInputStream(path.toFile())) {
 			Yaml yaml = new Yaml();
@@ -30,6 +34,8 @@ public class ParserCache {
 			for (Map.Entry<String, Map<String, Map<String, Object>>> entityEntry : map.entrySet()) {
 				classInfoList.add(getClassInfo(entityEntry));
 			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		return classInfoList;
 	}

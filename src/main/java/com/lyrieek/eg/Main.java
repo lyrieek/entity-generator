@@ -4,7 +4,9 @@ import com.lyrieek.eg.config.EGEnv;
 import com.lyrieek.eg.config.ParserCache;
 import com.lyrieek.eg.config.RedInk;
 import com.lyrieek.eg.ibatis.ClassGenerator;
+import net.bytebuddy.dynamic.DynamicType;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,19 +16,16 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		Path path = Paths.get("build/entity.yml");//Paths.get("build/%s.yml".formatted(tran.getCRC32()));
-		RedInk redInk = new RedInk("red-ink.yml");
-//		Transcribing tran = new Transcribing();
-//		Map<String, ResArray> tables = tran.getTables(new EGEnv("spring.properties"), redInk);
-//		String body = tran.getString(tables);
-//		try {
-//			Files.deleteIfExists(path);
-//			Files.writeString(path, body);
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
+		File resource = new File("./src/main/resources");
+		RedInk redInk = new RedInk(resource, "red-ink.yml");
+
+		Transcribing tran = new Transcribing(path);
+		Map<String, ResArray> tables = tran.getTables(new EGEnv(resource, "spring.properties"), redInk);
+		tran.write(tables);
+		File output = new File("build/generated");
 		for (ClassInfo classInfo : ParserCache.parseYaml(path)) {
-			Class<?> generatedClass = ClassGenerator.generateClass(redInk, classInfo);
-			System.out.println("Generated class: " + generatedClass.getName());
+			ClassGenerator.generateClass(redInk, classInfo, output).ifPresent(loadedClass ->
+					System.out.println("Generated class: " + loadedClass.getName()));
 		}
 	}
 

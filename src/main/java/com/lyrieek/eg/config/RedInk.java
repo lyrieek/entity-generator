@@ -3,6 +3,7 @@ package com.lyrieek.eg.config;
 import com.lyrieek.eg.ClassInfo;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -13,18 +14,17 @@ import java.util.Objects;
 public class RedInk {
 
 	private final Map<String, List<String>> data;
+	private ClassLoader classLoader;
 
-	public RedInk(String filePath) {
-		try (InputStream input = new FileInputStream(Paths.get(
-				Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-						.getResource(filePath)).toURI()).toFile())) {
+	public RedInk(File folder, String filePath) {
+		try (InputStream input = new FileInputStream(Paths.get(folder.getPath(), filePath).toFile())) {
 			Yaml yaml = new Yaml();
 			data = yaml.load(input);
 			if (data == null) {
 				throw new RuntimeException("no red-ink");
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("no red-ink", e);
 		}
 	}
 
@@ -48,20 +48,29 @@ public class RedInk {
 		return false;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(new RedInk("red-ink.yml").get("_pre"));
+	public String getSubClassStr(ClassInfo classInfo) {
+		if (classInfo.getSubClass() != null) {
+			return classInfo.getSubClass();
+		}
+		if (classInfo.getTableName().endsWith("_LOG") && data.containsKey("_default_log_sub")) {
+			return get("_default_log_sub").get(0);
+		}
+		if (data.containsKey("_default_sub")) {
+			return get("_default_sub").get(0);
+		}
+		return null;
 	}
 
 	public Class<?> getSubClass(ClassInfo classInfo) {
 		try {
 			if (classInfo.getSubClass() != null) {
-				return Class.forName(classInfo.getSubClass());
+				return getClassLoader().loadClass(classInfo.getSubClass());
 			}
 			if (classInfo.getTableName().endsWith("_LOG") && data.containsKey("_default_log_sub")) {
-				return Class.forName(get("_default_log_sub").get(0));
+				return getClassLoader().loadClass(get("_default_log_sub").get(0));
 			}
 			if (data.containsKey("_default_sub")) {
-				return Class.forName(get("_default_sub").get(0));
+				return getClassLoader().loadClass(get("_default_sub").get(0));
 			}
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
@@ -74,5 +83,17 @@ public class RedInk {
 			return "com";
 		}
 		return get("_package_name").get(0);
+	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	public ClassLoader getClassLoader() {
+		return Objects.requireNonNullElse(classLoader, ClassLoader.getSystemClassLoader());
+	}
+
+	public boolean getGeneratedLoad() {
+		return false;
 	}
 }

@@ -6,6 +6,8 @@ import com.lyrieek.eg.conn.DBConn;
 import com.lyrieek.eg.conn.OracleBasicInfo;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
@@ -16,6 +18,11 @@ import java.util.zip.CRC32;
 public class Transcribing {
 
 	private final CRC32 crc32 = new CRC32();
+	Path output;
+
+	public Transcribing(Path output) {
+		this.output = output;
+	}
 
 	public Map<String, ResArray> getTables(EGEnv env, RedInk redInk) {
 		try (DBConn conn = new DBConn(env)) {
@@ -26,6 +33,16 @@ public class Transcribing {
 			ex.printStackTrace();
 		}
 		return null;
+	}
+
+	public void write(Map<String, ResArray> tables) {
+		String body = getString(tables);
+		try {
+			Files.deleteIfExists(output);
+			Files.writeString(output, body);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public String getString(Map<String, ResArray> tables) {

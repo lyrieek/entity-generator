@@ -27,6 +27,7 @@ public class DBConn implements Closeable {
 		String user = env.val("jdbc.username");
 		String password = env.val("jdbc.password");
 		try {
+			Class.forName(env.val("jdbc.driverClassName"));
 			conn = DriverManager.getConnection(url, user, password);
 			if (conn == null) {
 				System.out.println("无法连接到数据库!");
@@ -35,7 +36,7 @@ public class DBConn implements Closeable {
 			time = LocalTime.now();
 			System.out.println("成功连接到数据库!");
 			schema = user.toUpperCase();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
