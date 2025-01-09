@@ -27,7 +27,7 @@ gradlePlugin {
         entityGenerator {
             id = 'com.lyrieek.eg'
             displayName = 'Entity Generator'
-            description = 'Entity Generator'
+            description = 'The Entity Generator is a tool designed to streamline the process of creating entity classes for database operations. It generates cache files from database schemas, allows developers to annotate these cache files, and ultimately produces class files based on the yml config. This tool aims to enhance development efficiency and maintainability by automating the repetitive task of entity class generation.'
             tags.addAll("db", "generator")
             implementationClass = 'com.lyrieek.eg.gradle.GradlePlugin'
         }
