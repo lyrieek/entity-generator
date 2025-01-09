@@ -38,14 +38,18 @@ public class RedInk {
 
 	public boolean matchPre(String content) {
 		if (isEmpty("_pre")) {
-			return false;
+			return !isExclude();
 		}
 		for (String item : data.get("_pre")) {
 			if (content.startsWith(item)) {
-				return true;
+				return isExclude();
 			}
 		}
-		return false;
+		return !isExclude();
+	}
+
+	public boolean isExclude() {
+		return get("_spec").contains("exclude");
 	}
 
 	public String getSubClassStr(ClassInfo classInfo) {
@@ -61,28 +65,32 @@ public class RedInk {
 		return null;
 	}
 
-	public Class<?> getSubClass(ClassInfo classInfo) {
-		try {
-			if (classInfo.getSubClass() != null) {
-				return getClassLoader().loadClass(classInfo.getSubClass());
-			}
-			if (classInfo.getTableName().endsWith("_LOG") && data.containsKey("_default_log_sub")) {
-				return getClassLoader().loadClass(get("_default_log_sub").get(0));
-			}
-			if (data.containsKey("_default_sub")) {
-				return getClassLoader().loadClass(get("_default_sub").get(0));
-			}
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		return Object.class;
+	public DefaultSet getDefault(ClassInfo classInfo) {
+		DefaultSet defaults = new DefaultSet();
+		boolean isLog = classInfo.getTableName().endsWith("_LOG");
+		defaults.setSubClass(defaultSingleVal(isLog, "sub"));
+		defaults.setSeq(defaultSingleVal(isLog, "seq"));
+		defaults.setPackageName(get("_package_name").get(0));
+		return defaults;
 	}
 
-	public String getPackageName() {
-		if (isEmpty("_package_name")) {
-			return "com";
+	public String defaultSingleVal(boolean isLog, String key) {
+		if (isLog && data.containsKey("_default_log_" + key)) {
+			return get("_default_log_" + key).get(0);
 		}
-		return get("_package_name").get(0);
+		if (data.containsKey("_default_" + key)) {
+			return get("_default_" + key).get(0);
+		}
+		return null;
+	}
+
+	public boolean filterField(boolean isLog, String columnName) {
+		if (isLog && data.containsKey("_default_log_exclude_fields")) {
+			return get("_default_log_exclude_fields").contains(columnName);
+		} else if (data.containsKey("_default_exclude_fields")) {
+			return get("_default_exclude_fields").contains(columnName);
+		}
+		return false;
 	}
 
 	public void setClassLoader(ClassLoader classLoader) {
@@ -93,7 +101,4 @@ public class RedInk {
 		return Objects.requireNonNullElse(classLoader, ClassLoader.getSystemClassLoader());
 	}
 
-	public boolean getGeneratedLoad() {
-		return false;
-	}
 }

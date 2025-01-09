@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lyrieek.eg.ClassInfo;
-import com.lyrieek.eg.config.RedInk;
+import com.lyrieek.eg.config.DefaultSet;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.modifier.Visibility;
@@ -23,10 +23,10 @@ import java.util.Optional;
 
 public class ClassGenerator {
 
-	public static Optional<Class<?>> generateClass(RedInk redInk, ClassInfo classInfo, File folder){
-		try(DynamicType.Unloaded<?> classItem = ClassGenerator.generateClass(redInk, classInfo)) {
+	public static Optional<Class<?>> generateClass(DefaultSet dSet, ClassInfo classInfo, File folder){
+		try(DynamicType.Unloaded<?> classItem = ClassGenerator.generateClass(dSet, classInfo)) {
 			classItem.saveIn(folder);
-			if (redInk.getGeneratedLoad()) {
+			if (dSet.getGeneratedLoad()) {
 				return Optional.of(classItem.load(ClassLoader.getSystemClassLoader()).getLoaded());
 			} else {
 				System.out.println("Generated class: " + classItem.getTypeDescription().getName());
@@ -37,22 +37,24 @@ public class ClassGenerator {
 		return Optional.empty();
 	}
 
-	public static DynamicType.Unloaded<?> generateClass(RedInk redInk, ClassInfo classInfo) {
+	public static DynamicType.Unloaded<?> generateClass(DefaultSet dSet, ClassInfo classInfo) {
 		ByteBuddy byteBuddy = new ByteBuddy();
 		AnnotationDescription tableName = AnnotationDescription.Builder.ofType(TableName.class)
 				.define("value", classInfo.getTableName()).build();
-		AnnotationDescription keySequence = AnnotationDescription.Builder.ofType(KeySequence.class)
-				.define("value", Objects.toString(classInfo.getSeq(), "AUTO_ID_SEQ")).build();
 		ByteBuddy with = byteBuddy.with(AnnotationValueFilter.Default.SKIP_DEFAULTS);
 		Class<?> subClass;
-		try (DynamicType.Unloaded<Object> subMake = with.subclass(Object.class).name(redInk.getSubClassStr(classInfo)).make()) {
+		try (DynamicType.Unloaded<Object> subMake = with.subclass(Object.class).name(dSet.getSubClass()).make()) {
 			subClass = subMake.load(ClassLoader.getSystemClassLoader()).getLoaded();
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 		DynamicType.Builder<?> builder = with.subclass(subClass)
-				.name(classInfo.getFullName(redInk.getPackageName())).annotateType(tableName);
-		builder = builder.annotateType(keySequence);
+				.name(classInfo.getFullName(dSet.getPackageName())).annotateType(tableName);
+		String seq = Objects.toString(classInfo.getSeq(), dSet.getSeq());
+		if (seq != null) {
+			builder = builder.annotateType(AnnotationDescription.Builder.ofType(KeySequence.class)
+					.define("value", seq).build());
+		}
 		for (FieldInfo field : classInfo.getFields()) {
 			Class<?> type = field.getType();
 			if (Clob.class.equals(type)) {

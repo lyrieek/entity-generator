@@ -31,9 +31,12 @@ public abstract class BasicInfo {
 				put("DATA_TYPE", String.class);
 				//put("DATA_LENGTH", Integer.class);
 			}});
+			cols.removeIf(item ->
+					redInk.filterField(tableName.endsWith("_LOG"), item.get("COLUMN_NAME").toString()));
 			if (cons.containsKey(tableName)) {
 				for (LinkedHashMap<String, Object> item : cols) {
-					if (cons.get(tableName).contains(item.get("COLUMN_NAME").toString())) {
+					String columnName = item.get("COLUMN_NAME").toString();
+					if (cons.get(tableName).contains(columnName)) {
 						item.put("primaryKey", true);
 						if (cons.size() == 1) {
 							break;

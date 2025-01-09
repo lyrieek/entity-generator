@@ -18,15 +18,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 
 public class GradlePlugin implements Plugin<Project> {
 
 	private String dbConfigPath;
 	private EGEnv egEnv;
+	private String output;
 
 	@Override
 	public void apply(Project project) {
-		GradlePlugin entityGenerator = project.getExtensions().create("entityGenerator", GradlePlugin.class);
+		GradlePlugin eg = project.getExtensions().create("entityGenerator", GradlePlugin.class);
 		String build = project.getLayout().getBuildDirectory().get().getAsFile().getPath();
 		Path cache = Paths.get(build, "cache.yml");
 		RedInk redInk = new RedInk(project.getRootDir(), "src/main/resources/red-ink.yml");
@@ -34,7 +36,7 @@ public class GradlePlugin implements Plugin<Project> {
 
 		TaskProvider<Task> generateCacheByDB = project.getTasks().register("generateCacheByDB", task -> {
 			task.doLast(taskAction -> {
-				egEnv = new EGEnv(project.getRootDir(), entityGenerator.getDbConfigPath());
+				egEnv = new EGEnv(project.getRootDir(), eg.getDbConfigPath());
 				Transcribing tran = new Transcribing(cache);
 				Map<String, ResArray> tables = tran.getTables(egEnv, redInk);
 				tran.write(tables);
@@ -47,15 +49,15 @@ public class GradlePlugin implements Plugin<Project> {
 			if (!Files.exists(cache)) {
 				task.dependsOn(generateCacheByDB);
 			}
-			task.doLast(taskAction -> {
-				System.out.println(redInk.getClassLoader());
+			task.doFirst(taskAction -> {
 				if (!Files.exists(cache)) {
 					System.err.println("cache file loss");
 					return;
 				}
-				File output = Paths.get(build, "generated").toFile();
+				File output = Paths.get(build, Objects.toString(eg.getOutput(), "generated")).toFile();
+				System.out.println("Generated entity folder: "+ output.getAbsolutePath());
 				for (ClassInfo classInfo : ParserCache.parseYaml(cache)) {
-					ClassGenerator.generateClass(redInk, classInfo, output).ifPresent(loadedClass ->
+					ClassGenerator.generateClass(redInk.getDefault(classInfo), classInfo, output).ifPresent(loadedClass ->
 							System.out.println("Generated class: " + loadedClass.getName()));
 				}
 			});
@@ -72,5 +74,13 @@ public class GradlePlugin implements Plugin<Project> {
 
 	public void setDbConfigPath(String dbConfigPath) {
 		this.dbConfigPath = dbConfigPath;
+	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
 	}
 }

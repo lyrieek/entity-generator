@@ -91,7 +91,7 @@ public class ParserCache {
 			case "Date":
 			case "DATE":
 				return LocalDateTime.class;
-			case "clob":
+			case "CLOB":
 				return Clob.class;
 			// 添加其他类型
 			default:
