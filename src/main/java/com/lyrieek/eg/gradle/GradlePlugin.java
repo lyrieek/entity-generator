@@ -3,6 +3,7 @@ package com.lyrieek.eg.gradle;
 import com.lyrieek.eg.ClassInfo;
 import com.lyrieek.eg.ResArray;
 import com.lyrieek.eg.Transcribing;
+import com.lyrieek.eg.config.DefaultSet;
 import com.lyrieek.eg.config.EGEnv;
 import com.lyrieek.eg.config.ParserCache;
 import com.lyrieek.eg.config.RedInk;
@@ -57,7 +58,7 @@ public class GradlePlugin implements Plugin<Project> {
 				File output = Paths.get(build, Objects.toString(eg.getOutput(), "generated")).toFile();
 				System.out.println("Generated entity folder: "+ output.getAbsolutePath());
 				for (ClassInfo classInfo : ParserCache.parseYaml(cache)) {
-					ClassGenerator.generateClass(redInk.getDefault(classInfo), classInfo, output).ifPresent(loadedClass ->
+					ClassGenerator.generateClass(new DefaultSet(classInfo, redInk), classInfo, output).ifPresent(loadedClass ->
 							System.out.println("Generated class: " + loadedClass.getName()));
 				}
 			});

@@ -1,5 +1,6 @@
 package com.lyrieek.eg;
 
+import com.lyrieek.eg.config.DefaultSet;
 import com.lyrieek.eg.config.EGEnv;
 import com.lyrieek.eg.config.ParserCache;
 import com.lyrieek.eg.config.RedInk;
@@ -28,7 +29,7 @@ public class MainTest {
 		LocalTime time = LocalTime.now();
 		File output = new File("build/generated");
 		for (ClassInfo classInfo : ParserCache.parseYaml(path)) {
-			ClassGenerator.generateClass(redInk.getDefault(classInfo), classInfo, output).ifPresent(loadedClass ->
+			ClassGenerator.generateClass(new DefaultSet(classInfo, redInk), classInfo, output).ifPresent(loadedClass ->
 					System.out.println("Generated class: " + loadedClass.getName()));
 		}
 		System.out.printf("%dms;%n", ChronoUnit.MILLIS.between(time, LocalTime.now()));

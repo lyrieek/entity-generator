@@ -1,18 +1,14 @@
 package com.lyrieek.eg.config;
 
+import com.lyrieek.eg.ClassInfo;
 import com.lyrieek.eg.util.ByteBuddyUtils;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
-import net.bytebuddy.implementation.StubMethod;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class DefaultSet {
 
@@ -20,8 +16,16 @@ public class DefaultSet {
 	private Class<?> superConstructorArg;
 	private String seq;
 	private String packageName = "com";
+
 	private static ClassLoader CLASS_LOADER;
 	private final static Map<String, Class<?>> CACHE_CLASS = new HashMap<>();
+
+	public DefaultSet(ClassInfo classInfo, RedInk redInk) {
+		setSuperConstructorArg(redInk.defaultSingleVal(classInfo.isLog(), "super_arg"));
+		setSupClass(redInk.defaultSingleVal(classInfo.isLog(), "super"));
+		setSeq(redInk.defaultSingleVal(classInfo.isLog(), "seq"));
+		setPackageName(redInk.get("_package_name").get(0));
+	}
 
 	public Class<?> getSupClass() {
 		return supClass;
@@ -35,8 +39,12 @@ public class DefaultSet {
 			if (getSuperConstructorArg() == null) {
 				return getSupClass().getConstructor();
 			}
+			if (Object.class.equals(getSupClass())) {
+				return Object.class.getConstructor();
+			}
 			return getSupClass().getConstructor(getSuperConstructorArg());
 		} catch (NoSuchMethodException e) {
+			System.err.printf("super:[%s]; msg:[%s];%n", getSupClass().toString(), e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}
@@ -54,14 +62,6 @@ public class DefaultSet {
 			return;
 		}
 		this.superConstructorArg = stringToClass(superConstructorArg);
-	}
-
-	public Constructor<?> getConstructor() {
-		try {
-			return getSupClass().getConstructor(getSuperConstructorArg());
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public Class<?> stringToClass(String classFullName) {
@@ -84,11 +84,14 @@ public class DefaultSet {
 		try (DynamicType.Unloaded<Object> classMake = builder.make()) {
 			DynamicType.Loaded<Object> item = classMake
 					.load(Objects.requireNonNullElse(CLASS_LOADER, ClassLoader.getSystemClassLoader()));
-			if (constructorArg != null) {
-				item.saveIn(new File("build/aa"));
-			}
+//			if (constructorArg != null) {
+//				item.saveIn(new File("build/aa"));
+//			}
 			Class<?> res = item.getLoaded();
-			CLASS_LOADER = res.getClassLoader();
+			if (!res.getClassLoader().equals(CLASS_LOADER)) {
+				CLASS_LOADER = res.getClassLoader();
+				System.out.println("change [Class Loader]:" + CLASS_LOADER);
+			}
 			CACHE_CLASS.put(classFullName, res);
 			return res;
 		} catch (Exception ex) {

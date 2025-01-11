@@ -52,15 +52,6 @@ public class RedInk {
 		return get("_spec").contains("exclude");
 	}
 
-	public DefaultSet getDefault(ClassInfo classInfo) {
-		DefaultSet defaults = new DefaultSet();
-		defaults.setSuperConstructorArg(defaultSingleVal(classInfo.isLog(), "super_arg"));
-		defaults.setSupClass(defaultSingleVal(classInfo.isLog(), "super"));
-		defaults.setSeq(defaultSingleVal(classInfo.isLog(), "seq"));
-		defaults.setPackageName(get("_package_name").get(0));
-		return defaults;
-	}
-
 	public String defaultSingleVal(boolean isLog, String key) {
 		if (isLog && data.containsKey("_default_log_" + key)) {
 			return get("_default_log_" + key).get(0);
