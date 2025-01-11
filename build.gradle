@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.lyrieek.eg'
-version = '1.2'
+version = '1.3'
 description = 'Entity Generator'
 
 java {
@@ -64,13 +64,6 @@ publishing {
         }
     }
 
-    publications {
-        maven(MavenPublication) {
-            fileTree(layout.projectDirectory.dir('libs')).each { file ->
-                artifact file
-            }
-        }
-    }
 }
 
 repositories {
@@ -82,7 +75,7 @@ dependencies {
     implementation 'net.bytebuddy:byte-buddy:1.15.11'
     implementation 'com.baomidou:mybatis-plus-annotation:3.5.9'
     implementation files(layout.projectDirectory.dir("src/main/resources"))
-    runtimeOnly 'com.oracle.database.jdbc:ojdbc8:23.3.0.23.09'
+    testRuntimeOnly 'com.oracle.database.jdbc:ojdbc8:23.3.0.23.09'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

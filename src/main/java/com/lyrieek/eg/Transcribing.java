@@ -36,16 +36,16 @@ public class Transcribing {
 	}
 
 	public void write(Map<String, ResArray> tables) {
-		String body = getString(tables);
+		String body = mapToContent(tables);
 		try {
 			Files.deleteIfExists(output);
-			Files.writeString(output, "# CRC32:%s\n%s".formatted(getCRC32(), body));
+			Files.writeString(output, "# CRC32:%s\n\n%s".formatted(getCRC32(), body));
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public String getString(Map<String, ResArray> tables) {
+	public String mapToContent(Map<String, ResArray> tables) {
 		crc32.reset();
 		StringBuilder builder = new StringBuilder();
 		for (Map.Entry<String, ResArray> table : tables.entrySet()) {

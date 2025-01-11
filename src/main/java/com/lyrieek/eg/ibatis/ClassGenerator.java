@@ -1,9 +1,6 @@
 package com.lyrieek.eg.ibatis;
 
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.lyrieek.eg.ClassInfo;
 import com.lyrieek.eg.config.DefaultSet;
 import net.bytebuddy.ByteBuddy;
@@ -68,10 +65,12 @@ public class ClassGenerator {
 			}
 			DynamicType.Builder.FieldDefinition.Optional<?> valuable = builder.defineField(field.getName(), type, Visibility.PRIVATE);
 			if (field.getPrimaryKey()) {
-				valuable = valuable.annotateField(AnnotationDescription.Builder.ofType(TableId.class).build());
+				valuable = valuable.annotateField(
+						AnnotationDescription.Builder.ofType(TableId.class).define("type", IdType.INPUT).build());
 			}
 			if (field.getJdbcType() != null) {
-				valuable = valuable.annotateField(AnnotationDescription.Builder.ofType(TableField.class).define("jdbcType", field.getJdbcType()).build());
+				valuable = valuable.annotateField(
+						AnnotationDescription.Builder.ofType(TableField.class).define("jdbcType", field.getJdbcType()).build());
 			}
 			builder = valuable;
 			builder = builder
