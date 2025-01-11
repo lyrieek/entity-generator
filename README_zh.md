@@ -2,6 +2,15 @@
 
 首先根据数据库文件生成**缓存文件**，然后开发人员参考缓存文件配置**批注文件**，最终根据批注生成class
 
+## 配置
+database file:
+```properties
+jdbc.driverClassName=oracle.jdbc.OracleDriver
+jdbc.url=jdbc:oracle:thin:@127.0.0.1:1521:data
+jdbc.username=user
+jdbc.password=qwe123
+```
+
 设置输出文件夹，以便指定生成的class文件存放位置：
 ```groovy
 entityGenerator {
@@ -23,8 +32,12 @@ dependencies {
 
 ## 父类
 使用以下两项配置父类，生成出来的Entity会自带这些父类：
-- _default_sub:
-- _default_log_sub:
+- _default_super:
+- _default_log_super:
+
+还可以为这些父类配置构造函数的参数(单个参数)
+- _default_super_arg:
+- _default_log_super_arg:
 
 请注意，在生成过程中，需要在内存中生成虚假的临时同名父类（不输出）。原因如下：
 1. 暂时没有找到可以加载使用者的classloader。

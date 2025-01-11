@@ -10,7 +10,8 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.FieldAccessor;
+import net.bytebuddy.dynamic.scaffold.TypeValidation;
+import net.bytebuddy.implementation.*;
 import net.bytebuddy.implementation.attribute.AnnotationValueFilter;
 import org.apache.ibatis.type.JdbcType;
 
@@ -23,8 +24,8 @@ import java.util.Optional;
 
 public class ClassGenerator {
 
-	public static Optional<Class<?>> generateClass(DefaultSet dSet, ClassInfo classInfo, File folder){
-		try(DynamicType.Unloaded<?> classItem = ClassGenerator.generateClass(dSet, classInfo)) {
+	public static Optional<Class<?>> generateClass(DefaultSet dSet, ClassInfo classInfo, File folder) {
+		try (DynamicType.Unloaded<?> classItem = ClassGenerator.generateClass(dSet, classInfo)) {
 			classItem.saveIn(folder);
 			if (dSet.getGeneratedLoad()) {
 				return Optional.of(classItem.load(ClassLoader.getSystemClassLoader()).getLoaded());
@@ -38,22 +39,26 @@ public class ClassGenerator {
 	}
 
 	public static DynamicType.Unloaded<?> generateClass(DefaultSet dSet, ClassInfo classInfo) {
-		ByteBuddy byteBuddy = new ByteBuddy();
+		ByteBuddy byteBuddy = new ByteBuddy()
+				.with(TypeValidation.DISABLED).with(AnnotationValueFilter.Default.SKIP_DEFAULTS);
 		AnnotationDescription tableName = AnnotationDescription.Builder.ofType(TableName.class)
 				.define("value", classInfo.getTableName()).build();
-		ByteBuddy with = byteBuddy.with(AnnotationValueFilter.Default.SKIP_DEFAULTS);
-		Class<?> subClass;
-		try (DynamicType.Unloaded<Object> subMake = with.subclass(Object.class).name(dSet.getSubClass()).make()) {
-			subClass = subMake.load(ClassLoader.getSystemClassLoader()).getLoaded();
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		DynamicType.Builder<?> builder = with.subclass(subClass)
+		DynamicType.Builder<?> builder = byteBuddy.subclass(dSet.getSupClass())
 				.name(classInfo.getFullName(dSet.getPackageName())).annotateType(tableName);
 		String seq = Objects.toString(classInfo.getSeq(), dSet.getSeq());
 		if (seq != null) {
 			builder = builder.annotateType(AnnotationDescription.Builder.ofType(KeySequence.class)
 					.define("value", seq).build());
+		}
+		if (dSet.getSuperConstructorArg() != null) {
+			builder = builder
+					.defineConstructor(Visibility.PUBLIC)
+					.withParameter(dSet.getSuperConstructorArg())
+					.intercept(MethodCall.invoke(dSet.getSuperConstructor()).onSuper().withArgument(0));
+		} else {
+			builder = builder
+					.defineConstructor(Visibility.PUBLIC)
+					.intercept(MethodCall.invoke(dSet.getSuperConstructor()).onSuper());
 		}
 		for (FieldInfo field : classInfo.getFields()) {
 			Class<?> type = field.getType();

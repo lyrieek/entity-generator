@@ -7,11 +7,12 @@ import java.util.List;
 public class ClassInfo {
 	private String tableName;
 	private String seq;
-	private String subClass;
+	private boolean isLog;
 	private List<FieldInfo> fields;
 
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
+		this.isLog = tableName.endsWith("_LOG");
 	}
 
 	public void setFields(List<FieldInfo> fields) {
@@ -38,11 +39,11 @@ public class ClassInfo {
 		this.seq = seq;
 	}
 
-	public String getSubClass() {
-		return subClass;
+	public boolean isLog() {
+		return isLog;
 	}
 
-	public void setSubClass(String subClass) {
-		this.subClass = subClass;
+	public void setLog(boolean log) {
+		isLog = log;
 	}
 }

@@ -1,5 +1,14 @@
-Entity Generator
+# Entity Generator
 Firstly, generate a cache file based on the database file. Then, developers refer to the cache file to configure the annotation file, and finally generate classes according to the annotations.
+
+## Configuration
+database file:
+```properties
+jdbc.driverClassName=oracle.jdbc.OracleDriver
+jdbc.url=jdbc:oracle:thin:@127.0.0.1:1521:data
+jdbc.username=user
+jdbc.password=qwe123
+```
 
 Setting Output Directory
 Set the output directory to specify where the generated class files will be stored:
@@ -23,8 +32,8 @@ Use the following two configurations to exclude fields, and these fields will no
 
 ## Parent Class Configuration
 Use the following two configurations for parent classes, and the generated Entity will inherit these parent classes:
-- _default_sub: Configure the parent class for ordinary Entities.
-- _default_log_sub: Configure the parent class for log-related Entities.
+- _default_super: Configure the parent class for ordinary Entities.
+- _default_log_super: Configure the parent class for log-related Entities.
 Please note that during the generation process, it is necessary to create false temporary parent classes with the same name in memory (not output). The reasons are as follows:
 
 A classloader to load the user's classes has not been found temporarily.

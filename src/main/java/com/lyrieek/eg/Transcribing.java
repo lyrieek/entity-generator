@@ -39,7 +39,7 @@ public class Transcribing {
 		String body = getString(tables);
 		try {
 			Files.deleteIfExists(output);
-			Files.writeString(output, body);
+			Files.writeString(output, "# CRC32:%s\n%s".formatted(getCRC32(), body));
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}

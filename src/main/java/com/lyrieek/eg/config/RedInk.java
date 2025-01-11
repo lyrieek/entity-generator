@@ -52,24 +52,11 @@ public class RedInk {
 		return get("_spec").contains("exclude");
 	}
 
-	public String getSubClassStr(ClassInfo classInfo) {
-		if (classInfo.getSubClass() != null) {
-			return classInfo.getSubClass();
-		}
-		if (classInfo.getTableName().endsWith("_LOG") && data.containsKey("_default_log_sub")) {
-			return get("_default_log_sub").get(0);
-		}
-		if (data.containsKey("_default_sub")) {
-			return get("_default_sub").get(0);
-		}
-		return null;
-	}
-
 	public DefaultSet getDefault(ClassInfo classInfo) {
 		DefaultSet defaults = new DefaultSet();
-		boolean isLog = classInfo.getTableName().endsWith("_LOG");
-		defaults.setSubClass(defaultSingleVal(isLog, "sub"));
-		defaults.setSeq(defaultSingleVal(isLog, "seq"));
+		defaults.setSuperConstructorArg(defaultSingleVal(classInfo.isLog(), "super_arg"));
+		defaults.setSupClass(defaultSingleVal(classInfo.isLog(), "super"));
+		defaults.setSeq(defaultSingleVal(classInfo.isLog(), "seq"));
 		defaults.setPackageName(get("_package_name").get(0));
 		return defaults;
 	}

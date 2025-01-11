@@ -61,7 +61,7 @@ public class ParserCache {
 				FieldInfo fieldInfo = new FieldInfo();
 				fieldInfo.setName(TextProcessor.camel(fieldName));
 				if (propertyDetails != null) {
-					String fieldType = Objects.toString(propertyDetails.get("type"), "string");
+					String fieldType = Objects.toString(propertyDetails.get("ibatis/type"), "string");
 					fieldInfo.setType(getClassType(fieldType));
 					fieldInfo.setPrimaryKey((Boolean) propertyDetails.get("primaryKey"));
 				} else {
