@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RedInk {
 
@@ -34,6 +36,11 @@ public class RedInk {
 
 	public boolean isEmpty(String key) {
 		return !data.containsKey(key);
+	}
+
+	public Map<String, List<String>> getCover() {
+		return data.entrySet().stream().filter(entry -> !entry.getKey().startsWith("_"))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	public boolean matchPre(String content) {

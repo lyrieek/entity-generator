@@ -18,17 +18,17 @@ public class MainTest {
 
 	@Test
 	public void mainTest() throws Exception {
-		Path path = Paths.get("build/entity.yml");//Paths.get("build/%s.yml".formatted(tran.getCRC32()));
+		Path cache = Paths.get("build/entity.yml");//Paths.get("build/%s.yml".formatted(tran.getCRC32()));
 		File resource = new File("./src/test/resources");
 		RedInk redInk = new RedInk(resource, "red-ink.yml");
 
-		Transcribing tran = new Transcribing(path);
+		Transcribing tran = new Transcribing(cache);
 		Map<String, ResArray> tables = tran.getTables(new EGEnv(resource, "spring.properties"), redInk);
 		tran.write(tables);
 
 		LocalTime time = LocalTime.now();
 		File output = new File("build/generated");
-		for (ClassInfo classInfo : ParserCache.parseYaml(path)) {
+		for (ClassInfo classInfo : ParserCache.parseYaml(cache)) {
 			ClassGenerator.generateClass(new DefaultSet(classInfo, redInk), classInfo, output).ifPresent(loadedClass ->
 					System.out.println("Generated class: " + loadedClass.getName()));
 		}

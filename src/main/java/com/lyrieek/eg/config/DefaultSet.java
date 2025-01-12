@@ -16,6 +16,7 @@ public class DefaultSet {
 	private Class<?> superConstructorArg;
 	private String seq;
 	private String packageName = "com";
+	private final Map<String, List<String>> cover;
 
 	private static ClassLoader CLASS_LOADER;
 	private final static Map<String, Class<?>> CACHE_CLASS = new HashMap<>();
@@ -25,6 +26,7 @@ public class DefaultSet {
 		setSupClass(redInk.defaultSingleVal(classInfo.isLog(), "super"));
 		setSeq(redInk.defaultSingleVal(classInfo.isLog(), "seq"));
 		setPackageName(redInk.get("_package_name").get(0));
+		this.cover = redInk.getCover();
 	}
 
 	public Class<?> getSupClass() {
@@ -105,6 +107,22 @@ public class DefaultSet {
 
 	public void setSeq(String seq) {
 		this.seq = seq;
+	}
+
+	public Class<?> getType(String className, String field) {
+		List<String> arr = cover.get(className);
+		if (arr == null) {
+			arr = cover.get(className.replaceAll("[A-Za-z0-9.]+\\.(?=[A-Z])", ""));
+		}
+		if (arr == null) {
+			return null;
+		}
+		for (int i = 0; i < arr.size() - 1; i++) {
+			if (field.equals(arr.get(i))) {
+				return ParserCache.getClassType(arr.get(i + 1), 0);
+			}
+		}
+		return null;
 	}
 
 	/**

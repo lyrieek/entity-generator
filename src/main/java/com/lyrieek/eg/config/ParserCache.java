@@ -20,7 +20,8 @@ public class ParserCache {
 
 	public static List<ClassInfo> parseYaml(String filePath) {
 		try {
-			return parseYaml(Paths.get(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(filePath)).toURI()));
+			return parseYaml(Paths.get(Objects.requireNonNull(
+					ClassLoader.getSystemClassLoader().getResource(filePath)).toURI()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -76,12 +77,20 @@ public class ParserCache {
 		return classInfo;
 	}
 
-	private static Class<?> getClassType(String typeName, int precision) {
+	public static Class<?> getClassType(String typeName, int precision) {
 		switch (typeName) {
 			case "int":
 				return int.class;
+			case "char":
+				return char.class;
+			case "double":
+				return double.class;
+			case "boolean":
+				return boolean.class;
 			case "Integer":
 				return Integer.class;
+			case "Character":
+				return Character.class;
 			case "String":
 				return String.class;
 			case "NUMBER":

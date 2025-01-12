@@ -36,12 +36,13 @@ public class ClassGenerator {
 	}
 
 	public static DynamicType.Unloaded<?> generateClass(DefaultSet dSet, ClassInfo classInfo) {
+		String name = classInfo.getFullName(dSet.getPackageName());
 		ByteBuddy byteBuddy = new ByteBuddy()
 				.with(TypeValidation.DISABLED).with(AnnotationValueFilter.Default.SKIP_DEFAULTS);
 		AnnotationDescription tableName = AnnotationDescription.Builder.ofType(TableName.class)
 				.define("value", classInfo.getTableName()).build();
 		DynamicType.Builder<?> builder = byteBuddy.subclass(dSet.getSupClass())
-				.name(classInfo.getFullName(dSet.getPackageName())).annotateType(tableName);
+				.name(name).annotateType(tableName);
 		String seq = Objects.toString(classInfo.getSeq(), dSet.getSeq());
 		if (seq != null) {
 			builder = builder.annotateType(AnnotationDescription.Builder.ofType(KeySequence.class)
@@ -58,7 +59,7 @@ public class ClassGenerator {
 					.intercept(MethodCall.invoke(dSet.getSuperConstructor()).onSuper());
 		}
 		for (FieldInfo field : classInfo.getFields()) {
-			Class<?> type = field.getType();
+			Class<?> type = Objects.requireNonNullElse(dSet.getType(name, field.getName()), field.getType());
 			if (Clob.class.equals(type)) {
 				type = String.class;
 				field.setJdbcType(JdbcType.CLOB);
