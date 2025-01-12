@@ -7,14 +7,14 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Clob;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalTime;
+import java.util.*;
 
 public class ParserCache {
 
@@ -61,8 +61,9 @@ public class ParserCache {
 				FieldInfo fieldInfo = new FieldInfo();
 				fieldInfo.setName(TextProcessor.camel(fieldName));
 				if (propertyDetails != null) {
-					String fieldType = Objects.toString(propertyDetails.get("ibatis/type"), "string");
-					fieldInfo.setType(getClassType(fieldType));
+					fieldInfo.setType(getClassType(Objects.toString(propertyDetails.get("type"), "String"),
+							Optional.ofNullable(propertyDetails.get("precision"))
+									.map(e -> Integer.parseInt(e.toString())).orElse(0)));
 					fieldInfo.setPrimaryKey((Boolean) propertyDetails.get("primaryKey"));
 				} else {
 					fieldInfo.setType(String.class);
@@ -75,7 +76,7 @@ public class ParserCache {
 		return classInfo;
 	}
 
-	private static Class<?> getClassType(String typeName) {
+	private static Class<?> getClassType(String typeName, int precision) {
 		switch (typeName) {
 			case "int":
 				return int.class;
@@ -83,11 +84,23 @@ public class ParserCache {
 				return Integer.class;
 			case "String":
 				return String.class;
-			case "Long":
 			case "NUMBER":
+				if (precision == 1) {
+					return Boolean.class;
+				}
 				return Long.class;
+			case "Long":
+				return Long.class;
+			case "Double":
+				return Double.class;
 			case "Boolean":
 				return Boolean.class;
+			case "BigDecimal":
+				return BigDecimal.class;
+			case "LocalDate":
+				return LocalDate.class;
+			case "LocalTime":
+				return LocalTime.class;
 			case "Date":
 			case "DATE":
 				return LocalDateTime.class;
