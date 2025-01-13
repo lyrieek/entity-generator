@@ -8,6 +8,7 @@ import com.lyrieek.eg.conn.OracleBasicInfo;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
@@ -39,7 +40,7 @@ public class Transcribing {
 		String body = mapToContent(tables);
 		try {
 			Files.deleteIfExists(output);
-			Files.writeString(output, "# CRC32:%s\n\n%s".formatted(getCRC32(), body));
+			Files.writeString(output, "# CRC32: [%s]\n# %s\n\n%s".formatted(getCRC32(), LocalDateTime.now(), body));
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
