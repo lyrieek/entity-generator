@@ -23,7 +23,7 @@ public abstract class BasicInfo {
 		Map<String, List<String>> cons = conn.queryKeyArray(getCons(), "TABLE_NAME", "NAME");
 		conn.query(getTableQuery(), ResArray.strMap("TABLE_NAME")).forEach(e -> {
 			String tableName = e.get("TABLE_NAME").toString();
-			if (redInk.matchPre(tableName)) {
+			if (redInk.shouldFilter(tableName)) {
 				return;
 			}
 			ResArray cols = conn.query(getCols(tableName), new HashMap<>() {{

@@ -16,6 +16,10 @@ public class DefaultSet {
 	private Class<?> superConstructorArg;
 	private String seq;
 	private String packageName = "com";
+
+	/**
+	 * 覆盖缓存列配置
+	 */
 	private final Map<String, List<String>> cover;
 
 	private static ClassLoader CLASS_LOADER;
@@ -86,9 +90,6 @@ public class DefaultSet {
 		try (DynamicType.Unloaded<Object> classMake = builder.make()) {
 			DynamicType.Loaded<Object> item = classMake
 					.load(Objects.requireNonNullElse(CLASS_LOADER, ClassLoader.getSystemClassLoader()));
-//			if (constructorArg != null) {
-//				item.saveIn(new File("build/aa"));
-//			}
 			Class<?> res = item.getLoaded();
 			if (!res.getClassLoader().equals(CLASS_LOADER)) {
 				CLASS_LOADER = res.getClassLoader();

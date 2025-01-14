@@ -25,6 +25,19 @@ dependencies {
 ```
 If the generated class files are not needed at runtime and are only used after compilation, the above configuration is not necessary.
 
+## Table Identification
+```yaml
+_spec:
+  - exclude
+_pre:
+  - TEST_
+_items:
+  - TEMP_LOG
+```
+This configuration imports all tables from the database by default,
+and then excludes tables that start with TEST_ and the TEMP_LOG table.
+For example, TEST_A, TEST_1, and TEMP_LOG will not generate entity classes, but TEMP_LOG2 will not be excluded.
+
 ## Excluding Fields
 Use the following two configurations to exclude fields, and these fields will not be generated in all tables:
 - _default_exclude_fields: Used to exclude ordinary fields.

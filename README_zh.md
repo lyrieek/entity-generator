@@ -25,7 +25,19 @@ dependencies {
 ```
 当然如果不需要在运行时使用，只在编译后用就无需配置了。
 
-## 排除字段
+## 识别表
+```yaml
+_spec:
+  - exclude
+_pre:
+  - TEST_
+_items:
+  - TEMP_LOG
+```
+这个配置默认导入数据库所有表, 然后排除掉以`TEST_`开头的表和`TEMP_LOG`表，例如`TEST_A`,`TEST_1`,`TEMP_LOG`不会生成实体类，但是不会排除`TEMP_LOG2`。
+如果`_spec`下改成`import`，就过滤出和上述完全相反的列表。
+
+## 排除通用字段
 使用以下两项配置来排除字段，被排除的字段在所有表实体中都不会生成
 - _default_exclude_fields:
 - _default_log_exclude_fields:

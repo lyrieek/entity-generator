@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,12 +45,21 @@ public class RedInk {
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
-	public boolean matchPre(String content) {
-		if (isEmpty("_pre")) {
+	/**
+	 * 判断给定的项是否应该被过滤
+	 */
+	public boolean shouldFilter(String content) {
+		if (isEmpty("_pre") && isEmpty("_items")) {
 			return !isExclude();
 		}
-		for (String item : data.get("_pre")) {
-			if (content.startsWith(item)) {
+		List<String> emptyList = Collections.emptyList();
+		for (String prefix : data.getOrDefault("_pre", emptyList)) {
+			if (content.startsWith(prefix)) {
+				return isExclude();
+			}
+		}
+		for (String item : data.getOrDefault("_items", emptyList)) {
+			if (content.equals(item)) {
 				return isExclude();
 			}
 		}
