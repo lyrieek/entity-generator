@@ -1,6 +1,5 @@
 package com.lyrieek.eg.config;
 
-import com.lyrieek.eg.ClassInfo;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -11,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+/**
+ * 批注
+ */
 public class RedInk {
 
 	private final Map<String, List<String>> data;

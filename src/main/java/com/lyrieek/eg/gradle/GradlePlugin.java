@@ -8,7 +8,6 @@ import com.lyrieek.eg.config.EGEnv;
 import com.lyrieek.eg.config.ParserCache;
 import com.lyrieek.eg.config.RedInk;
 import com.lyrieek.eg.ibatis.ClassGenerator;
-import net.bytebuddy.dynamic.DynamicType;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;

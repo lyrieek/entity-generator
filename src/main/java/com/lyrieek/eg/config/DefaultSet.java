@@ -109,6 +109,9 @@ public class DefaultSet {
 		this.seq = seq;
 	}
 
+	/**
+	 * 获取列的对应类型
+	 */
 	public Class<?> getType(String className, String field) {
 		List<String> arr = cover.get(className);
 		if (arr == null) {
@@ -119,6 +122,7 @@ public class DefaultSet {
 		}
 		for (int i = 0; i < arr.size() - 1; i++) {
 			if (field.equals(arr.get(i))) {
+				// 进入类型修订
 				return ParserCache.getClassType(arr.get(i + 1), 0);
 			}
 		}

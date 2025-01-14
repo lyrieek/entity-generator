@@ -43,9 +43,19 @@ Use the following two configurations for sequences:
 - _default_seq: Configure the sequence for ordinary Entities.
 - _default_log_seq: Configure the sequence for log-related Entities.
 
-## File Explanation
-Cache File: Generated based on the database file, it records information such as the database table structure for developers to refer to.
-Annotation File: Developers refer to the cache file to make annotations, which guide the generation of class files.
+## Type Revision
+The generation of entity classes can be more flexibly controlled through the configuration of custom column attributes.
+Specify additional attribute information in the configuration file:
+```yaml
+TableName:
+    - ColumnName
+    - DataType
+```
+- TableName: Database table name
+- ColumnName: Column name in the table
+- DataType: The specified column type (DataType is currently limited to `java.lang.*` types)
+These custom attributes will be reflected in the generated entity classes in corresponding forms,
+such as adding annotations, generating specific code, etc., thereby achieving more fine-grained code generation.
 
 ## Plan Supplements
 Optimization of Cache File Generation

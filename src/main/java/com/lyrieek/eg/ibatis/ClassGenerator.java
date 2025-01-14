@@ -19,6 +19,10 @@ import java.sql.Clob;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * 具体的类生成
+ * TODO 将来改为非静态
+ */
 public class ClassGenerator {
 
 	public static Optional<Class<?>> generateClass(DefaultSet dSet, ClassInfo classInfo, File folder) {
