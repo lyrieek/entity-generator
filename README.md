@@ -1,6 +1,8 @@
 # Entity Generator
 Firstly, generate a cache file based on the database file. Then, developers refer to the cache file to configure the annotation file, and finally generate classes according to the annotations.
 
+[中文文档](https://github.com/lyrieek/entity-generator/blob/master/README_zh.md)
+
 ## Configuration
 database file:
 ```properties
