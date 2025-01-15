@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.lyrieek.eg'
-version = '1.5'
+version = '1.6'
 description = 'Entity Generator'
 
 java {
@@ -74,6 +74,7 @@ dependencies {
     implementation 'org.yaml:snakeyaml:2.3'
     implementation 'net.bytebuddy:byte-buddy:1.15.11'
     implementation 'com.baomidou:mybatis-plus-annotation:3.5.9'
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
     implementation files(layout.projectDirectory.dir("src/main/resources"))
     runtimeOnly 'com.oracle.database.jdbc:ojdbc8:23.3.0.23.09'//TODO
     testImplementation platform('org.junit:junit-bom:5.10.0')
